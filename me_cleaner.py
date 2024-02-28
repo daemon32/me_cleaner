@@ -778,9 +778,13 @@ if __name__ == "__main__":
             print("The HAP bit is " +
                   ("SET" if pchstrp31 & 1 << 16 else "NOT SET"))
         elif gen == 7:
+            fdf.seek(fpsba + 0x7C)
+            pchstrp31 = unpack("<I", fdf.read(4))[0]
+            print("The HAP(1) bit is " +
+                  ("SET" if pchstrp31 & 1 << 16 else "NOT SET"))
             fdf.seek(fpsba + 0xDC)
             pchstrp55 = unpack("<I", fdf.read(4))[0]
-            print("The HAP bit is " +
+            print("The HAP(2) bit is " +
                   ("SET" if pchstrp55 & 1 << 16 else "NOT SET"))
         else:
             fdf.seek(fpsba)
@@ -953,7 +957,10 @@ if __name__ == "__main__":
                 pchstrp31 |= (1 << 16)
                 fdf.write_to(fpsba + 0x7C, pack("<I", pchstrp31))
             elif gen == 7:
-                print("Setting the HAP bit in PCHSTRP55 to disable Intel ME...")
+                print("Setting the HAP(1) bit in PCHSTRP31 to disable Intel ME...")
+                pchstrp31 |= (1 << 16)
+                fdf.write_to(fpsba + 0x7C, pack("<I", pchstrp31))
+                print("Setting the HAP(2) bit in PCHSTRP55 to disable Intel ME...")
                 pchstrp55 |= (1 << 16)
                 fdf.write_to(fpsba + 0xDC, pack("<I", pchstrp55))
             else:
